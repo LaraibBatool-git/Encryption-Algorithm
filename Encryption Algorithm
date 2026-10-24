@@ -47,7 +47,7 @@ def clean_key(key):
     letters=[]
     for ch in key:
         if ch.isalpha():
-            letters.append(ch.islower())
+            letters.append(ch.lower())
     return letters
 
 def vigenere_cipher(text, key, decrypt=False):
