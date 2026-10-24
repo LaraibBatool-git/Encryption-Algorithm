@@ -1,0 +1,151 @@
+#function to keep capital letters capital and vice versa
+def get_base(ch):
+    if ch.isupper():
+        return ord('A')
+    return ord('a')
+
+#Ceaser Cipher
+def ceaser_cipher(text, shift):
+    result=[]               #collect new letters
+    for ch in text:         #loop over each character of the provided text
+        if ch.isalpha():    #chech for letters only
+            base = get_base(ch)
+            position = ord(ch) - base
+            new_pos = (position + shift) % 26
+            result.append(chr(new_pos + base))
+        else:
+            result.append(ch)
+    return "".join(result)   #join list into one string
+
+def ceaser_encrypt(text, key):
+    return ceaser_cipher(text, key)
+
+def ceaser_decrypt(text, key):
+    return ceaser_cipher(text, -key)
+
+#Atbash cipher
+def atbash_cipher(text):
+    result=[]
+    for ch in text:
+        if ch.isalpha():
+            base = get_base(ch)
+            position = ord(ch) - base
+            new_pos = 25 - position
+            result.append(chr(new_pos + base))
+        else:
+            result.append(ch)
+    return "".join(result)
+
+def atbash_encrypt(text):
+    return atbash_cipher(text)
+
+def atbash_decrypt(text):
+    return atbash_cipher(text)
+
+#Vigenere cipher
+def clean_key(key):
+    letters=[]
+    for ch in key:
+        if ch.isalpha():
+            letters.append(ch.islower())
+    return letters
+
+def vigenere_cipher(text, key, decrypt=False):
+    key_letters = clean_key(key)
+    if key == 0:
+        raise ValueError("Invalid key! Key must have atleast one letter")
+
+    result = []
+    key_index = 0         #tell which letter of key is being used
+
+    for ch in text:
+        if ch.isalpha():
+            base = get_base(ch)
+            shift = ord(key_letters[key_index % len(key_letters)]) - ord('a')
+            if decrypt:
+                shift = -shift
+            position = ord(ch) - base
+            result.append(chr((position + shift) % 26 + base))
+            key_index+=1
+        else:
+            result.append(ch)
+    return "".join(result)
+
+def vigenere_encypt(text, key):
+    return vigenere_cipher(text, key)
+
+def vigenere_decrypt(text, key):
+    return vigenere_cipher(text, key, decrypt=True)
+
+#Main menu
+def menu():
+    print("                    ENCRYPTION APPLICATION")
+    print("1. Ceaser Cipher")
+    print("2. Atbash Cipher")
+    print("3. Vigenere Cipher")
+    print("4. Exit")
+
+def algo_mode():
+    while True:
+        selection = input("Do you want to encrypt or decrypt?")
+        if selection == 'e' or selection == 'd':
+            return selection
+        print("Please enter e or d")
+
+def get_key():
+    while True:
+        try:
+            return int(input("Pleae enter key (number)"))
+        except ValueError:
+            print("Please enter valid key")
+
+def main():
+    while True:
+        menu()
+        choice = input("Please enter you choice (1-4):")
+
+        if choice == "4":
+            print("Thank you")
+            break
+
+        if choice not in ("1", "2", "3", "4"):
+            print("Please enter valid choice!")
+            continue
+
+        mode = algo_mode()
+        msg = input("Please enter message:")
+
+#ceaser cipher
+        if choice == "1":
+            key = get_key()
+            if mode == 'e':
+                result = ceaser_encrypt(msg, key)
+            else:
+                result = ceaser_decrypt(msg, -key)
+
+#Atbash cipher       
+        elif choice == "2":        
+            if mode == 'e':
+                result = atbash_encrypt(msg)
+            else:
+                result = atbash_decrypt(msg)
+                
+#vigenere cipher
+        elif choice == "3":
+            key = input("Please enter key (words):")
+            try:
+                if mode == 'e':
+                    result = vigenere_encypt(msg, key)
+                else:
+                    result = vigenere_decrypt(msg, key)
+            except ValueError as error:
+                print("Error:", error)
+                continue
+ 
+        if mode == "e":
+            print("Encrypted message:", result)
+        else:
+            print("Decrypted message:", result)
+
+if __name__ == "__main__":
+    main()
